@@ -1,45 +1,24 @@
 import unittest
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.common.keys import Keys
 
 
-class LoginAndRegister(unittest.TestCase):
+class Login(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # runs before all methods
+        cls.driver = webdriver.Firefox()
+        cls.driver.get("http://automationpractice.com/index.php")
+        assert "My Store" in cls.driver.title
 
     def setUp(self):
-        self.driver = webdriver.Firefox()
-        self.driver.get("http://automationpractice.com/index.php")
-        self.assertIn("My Store", self.driver.title)
+        # runs before each method
         self.driver.find_element_by_class_name("login").click()
+        self.assertIn("Authentication", self.driver.page_source)
 
-    def test_forgot_password_wrong_email(self):
+    def test_010_wrong_login_and_password(self):
         driver = self.driver
-        assert "Authentication" in driver.page_source
-        driver.find_element_by_link_text("Forgot your password?").click()
-        form = driver.find_element_by_id('form_forgotpassword')
-        assert form
-        mail = driver.find_element_by_id('email')
-        mail.clear()
-        mail.send_keys('tttest9876@test.com')
-        mail.submit()
-        res = driver.find_element_by_css_selector('div.alert.alert-danger')
-        assert res
-
-    def test_forgot_password_valid_email(self):
-        driver = self.driver
-        assert "Authentication" in driver.page_source
-        driver.find_element_by_link_text("Forgot your password?").click()
-        form = driver.find_element_by_id('form_forgotpassword')
-        assert form
-        mail = driver.find_element_by_id('email')
-        mail.clear()
-        mail.send_keys('test123321@test.com')
-        mail.submit()
-        res = driver.find_element_by_css_selector('p.alert.alert-success')
-        assert res
-
-    def test_wrong_login_and_password(self):
-        driver = self.driver
-        assert "Authentication" in driver.page_source
         mail = driver.find_element_by_id('email')
         mail.clear()
         mail.send_keys('test@test.com')
@@ -49,9 +28,8 @@ class LoginAndRegister(unittest.TestCase):
         driver.find_element_by_id('SubmitLogin').click()
         assert "Authentication failed." in driver.page_source
 
-    def test_empty_password(self):
+    def test_020_empty_password(self):
         driver = self.driver
-        assert "Authentication" in driver.page_source
         mail = driver.find_element_by_id('email')
         mail.clear()
         mail.send_keys('test123321@test.com')  # use existing(valid) email
@@ -59,9 +37,8 @@ class LoginAndRegister(unittest.TestCase):
         driver.find_element_by_id('SubmitLogin').click()
         assert "Password is required." in driver.page_source
 
-    def test_valid_login_and_password(self):
+    def test_030_valid_login_and_password(self):
         driver = self.driver
-        assert "Authentication" in driver.page_source
         mail = driver.find_element_by_id('email')
         mail.clear()
         mail.send_keys('test123321@test.com')
@@ -69,13 +46,17 @@ class LoginAndRegister(unittest.TestCase):
         pwd.clear()
         pwd.send_keys('test1@3')
         driver.find_element_by_id('SubmitLogin').click()
-        assert "My account" in driver.page_source
+        self.assertIn("My account", driver.page_source)
 
-    def tearDown(self):
-        self.driver.quit()
+    # def tearDown(self):
+    #    pass
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
 
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-    #suite = unittest.TestLoader().loadTestsFromTestCase(LoginAndRegister)
-    #unittest.TextTestRunner(verbosity=2).run(suite)
+    # suite = unittest.TestLoader().loadTestsFromTestCase(Login)
+    # unittest.TextTestRunner(verbosity=2).run(suite)
