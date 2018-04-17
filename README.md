@@ -1,2 +1,3 @@
 # automated-testing
-Examples of auto tests using Selenium WebDriver with Python
+Examples of simple UI autotests using Python + Selenium WebDriver + unittest.
+Tested application: http://automationpractice.com/index.php

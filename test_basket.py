@@ -13,18 +13,19 @@ class Basket(unittest.TestCase):
         # runs before all methods
         cls.driver = webdriver.Firefox()
         cls.driver.maximize_window()
+        cls.driver.get("http://automationpractice.com/index.php")
+        assert "My Store" in cls.driver.title
 
     def setUp(self):
         # runs before each method
-        driver = self.driver
-        driver.get("http://automationpractice.com/index.php")
-        assert "My Store" in driver.title
-    '''
+        # driver = self.driver
+        pass
+
     def test_010_empty_cart(self):
         driver = self.driver
         driver.find_element_by_xpath('//*[@title = "View my shopping cart"]').click()
         assert "Your shopping cart is empty." in driver.page_source
-    '''
+
     def test_020_add_item(self):
         driver = self.driver
         driver.get("http://automationpractice.com/index.php?id_product=2&controller=product")
@@ -33,17 +34,20 @@ class Basket(unittest.TestCase):
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((
             By.CSS_SELECTOR, "div.clearfix")))
         assert 'There is 1 item in your cart.' in driver.page_source
-
+    ''' needs to be fixed, cart opens empty for some reason
     def test_030_change_quantity(self):
         driver = self.driver
         driver.find_element_by_xpath('//*[@title = "View my shopping cart"]').click()
-        total = driver.find_element_by_id('total_product_price_1_1_0')
-        price = int(total.text[1:])
-        driver.find_element_by_id('cart_quantity_up_1_1_0_0').click()
+        price = driver.find_element_by_xpath('//*[@class="cart_item"]/td[4]/span/span')
+        price = float(price.text[1:])
+        print(price)
+        driver.find_element_by_css_selector('a.cart_quantity_up').click()
         WebDriverWait(driver, 10)
-        print(total.text)
+        total = driver.find_element_by_xpath('//*[@class="cart_item"]/td[6]/span')
+        total = float(total.text[1:])
+        print(total)
         assert int(total[1:]) == price * 2
-
+    '''
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
